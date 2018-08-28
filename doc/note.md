@@ -147,8 +147,62 @@ export { default } from './{{ properCase name }}.vue'
 
 之後就可在 src/components/ 中看到 Button 目錄，其中包含了 Button.vue 及 index.js
 
----
-
 附帶說明，上面產生 vue component 為何要附帶那個 index.js？
 目的是要在 router import 時，不用指定全名 components/Button/Button.vue，只要 component/Button 即可，
 它會自動找到 index.js 並依內容 export。
+
+### 驗證使用者輸入資料
+
+為使用者輸入資料加入防呆驗證
+
+```js
+// plopfile.js
+
+// 驗證函數
+const notEmptyFor = name => {
+  return v => {
+    if (!v || v.trim === '') {
+      return `${name} is required`;
+    } else {
+      return true;
+    }
+  };
+};
+
+module.exports = function (plop) {
+  const name = '{{ properCase name }}';
+  plop.setGenerator('component', {
+    description: 'generate vue component',
+    prompts: [{
+      type: 'input',
+      name: 'name',
+      message: 'component name please',
+      validate: notEmptyFor('name'),  // 使用 validate 來使用驗證函數
+      // filter: 
+    }],
+    actions: [{
+      type: 'add',
+      path: `src/components/${name}/index.js`,
+      templateFile: 'plop-templates/component/index.plopjs'
+    }, {
+      type: 'add',
+      path: `src/components/${name}/${name}.vue`,
+      templateFile: 'plop-templates/component/component.plopvue'
+    }]
+  });
+
+  plop.setGenerator('none', {});
+};
+```
+
+```sh
+>plop component
+? component name please
+>> name is required ## 因為沒輸入，所以會報例外訊息
+
+```
+
+參考：
+
+* [Plop — a micro-generator to ease your daily life](http://www.nicoespeon.com/en/2015/11/plop-micro-generator-boilerplate-yeoman-alternative/)
+* [JSMurMur](https://www.facebook.com/JSmurmur/videos/1086168144873239/?hc_ref=ARRGi_z9tYm3F281Ir7KMD-X13wdLuRKqU3-ZqZsPjE1-wPd0346k4XCPjCssDD1iUo&__tn__=kC-R)
