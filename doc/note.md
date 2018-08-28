@@ -22,7 +22,7 @@ vue create <<proj>>
 TODO:
 vue-class-component
 vuex-class: Type Script 在 vuex 會有問題，可靠此解決
-
+Styled-Components
 ---
 
 ## Plop
